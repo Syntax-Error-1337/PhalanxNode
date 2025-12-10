@@ -1,0 +1,14 @@
+# List of bad user agents
+nikto
+sqlmap
+nessus
+openvas
+nmap
+w3af
+acunetix
+havij
+appscan
+burp
+metasploit
+netsparker
+webinspect

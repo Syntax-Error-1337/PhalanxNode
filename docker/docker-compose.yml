@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  nginx-secure:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nginx-secure
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Main Configs
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../nginx/conf.d:/etc/nginx/conf.d:ro
+      # ModSecurity Configs
+      - ../modsecurity/modsecurity.conf:/etc/nginx/modsecurity/modsecurity.conf:ro
+      - ../modsecurity/crs-setup.conf:/etc/nginx/modsecurity/crs-setup.conf:ro
+      - ../modsecurity/rules:/etc/nginx/modsecurity/rules:ro
+      # Data
+      - ../certs:/etc/nginx/certs:ro
+      - ../logs:/var/log/nginx
+    environment:
+      - TZ=UTC
+    networks:
+      - secure_net
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    sysctls:
+      - net.core.somaxconn=1024
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+  # Optional: Log rotation/management helper could go here
+  # Optional: CrowdSec could be added here
+
+networks:
+  secure_net:
+    driver: bridge
